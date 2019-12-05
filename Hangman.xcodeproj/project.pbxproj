@@ -15,7 +15,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		59992F81238F4C7000339953 /* Hangman.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Hangman.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		59992F81238F4C7000339953 /* H?ngm?n.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "H?ngm?n.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		59992F84238F4C7000339953 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		59992F86238F4C7000339953 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		59992F8D238F4C7500339953 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -35,6 +35,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		59263396239217120036FCC7 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		59992F78238F4C7000339953 = {
 			isa = PBXGroup;
 			children = (
@@ -46,7 +53,7 @@
 		59992F82238F4C7000339953 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				59992F81238F4C7000339953 /* Hangman.app */,
+				59992F81238F4C7000339953 /* H?ngm?n.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -54,6 +61,7 @@
 		59992F83238F4C7000339953 /* Hangman */ = {
 			isa = PBXGroup;
 			children = (
+				59263396239217120036FCC7 /* Extensions */,
 				59992F9C238F4C9400339953 /* Storyboards */,
 				59992F9B238F4C8F00339953 /* Delelgates */,
 				59992F9A238F4C8900339953 /* Controllers */,
@@ -121,7 +129,7 @@
 			);
 			name = Hangman;
 			productName = Hangman;
-			productReference = 59992F81238F4C7000339953 /* Hangman.app */;
+			productReference = 59992F81238F4C7000339953 /* H?ngm?n.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -320,7 +328,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.talismanmobile.Hangman;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "H?ngm?n";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -338,7 +346,7 @@
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.talismanmobile.Hangman;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = "H?ngm?n";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
