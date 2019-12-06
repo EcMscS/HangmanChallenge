@@ -14,9 +14,9 @@ class MainVC: UIViewController {
     var wordView: UIView!
     var lettersView: UIView!
     
-//    var currentWord: String
+    var currentWord: String = ""
     var allLetters: [Character] = []
-//    var usedLetters: [Character]
+    var usedLetters: [Character] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,6 +26,11 @@ class MainVC: UIViewController {
         setupLetters()
     }
     
+    func setupGame() {
+        currentWord = "protein"
+        print("Current word is: \(currentWord)")
+    }
+    
     func setupNavBar() {
         title = "H?ngm?n"
         navigationController?.navigationBar.isTranslucent = true
@@ -33,13 +38,14 @@ class MainVC: UIViewController {
     }
     
     func setupViews() {
+        setupGame()
+        
         view.backgroundColor = .systemBackground
     
         wordLabel = UILabel()
         wordLabel.translatesAutoresizingMaskIntoConstraints = false
-        wordLabel.text = "Word"
+        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10)
         wordLabel.textAlignment = .center
-        wordLabel.textColor = .darkText
         
         wordView = UIView()
         wordView.backgroundColor = .systemRed
@@ -94,23 +100,12 @@ class MainVC: UIViewController {
                 if !allLetters.isEmpty {
                     let button = UIButton(type: .system)
                     let currentLetter = allLetters.removeFirst()
-                    print("Current Letter: \(currentLetter) and letter count: \(allLetters.count)" )
-                    
-                    let buttonFont = UIFont.systemFont(ofSize: 30, weight: .bold)
-                    let shadow = NSShadow()
-                    shadow.shadowColor = UIColor.black
-                    shadow.shadowBlurRadius = 5
-
-                    let fontAttributes: [NSAttributedString.Key: Any] = [
-                        .font: buttonFont,
-                        .foregroundColor: UIColor.white,
-                        .shadow: shadow
-                    ]
-                    let attributedButtonText = NSAttributedString.init(string: String(currentLetter), attributes: fontAttributes)
-                    button.setAttributedTitle(attributedButtonText, for: .normal)
-                    
+                    button.setAttributedTitle(createAttributedText(text: String(currentLetter), size: 30, fontWeight: .bold, isShadow: true, wordSpacing: 0), for: .normal)
                     rowStackview.addArrangedSubview(button)
                     button.addTarget(self, action:#selector(buttonPressed(button:)), for: .touchUpInside)
+                    
+                    //TESTING
+                    print("Current Letter: \(currentLetter) and letter count: \(allLetters.count)" )
                 }
             }
         }
@@ -125,6 +120,42 @@ class MainVC: UIViewController {
         ])
     }
     
+    func numberOfUnderscores() -> String {
+        let number = currentWord.count
+        var underscores:String = ""
+    
+        for _ in 0..<number {
+            underscores = underscores + "_"
+        }
+        
+        return underscores
+    }
+    
+    func createAttributedText(text: String, size: CGFloat, fontWeight: UIFont.Weight , isShadow: Bool, wordSpacing: CGFloat) -> NSAttributedString {
+        let buttonFont = UIFont.systemFont(ofSize: size, weight: fontWeight)
+        var fontAttributes: [NSAttributedString.Key: Any]
+        
+        if isShadow {
+            let shadow = NSShadow()
+            shadow.shadowColor = UIColor.black
+            shadow.shadowBlurRadius = 5
+            
+            fontAttributes = [
+                .font: buttonFont,
+                .foregroundColor: UIColor.white,
+                .shadow: shadow,
+                .kern: wordSpacing
+            ]
+        } else {
+            fontAttributes = [
+                .font: buttonFont,
+                .foregroundColor: UIColor.white,
+                .kern: wordSpacing
+            ]
+        }
+    
+        return NSAttributedString.init(string: text, attributes: fontAttributes)
+    }
     
     @objc func buttonPressed(button: UIButton) {
         
