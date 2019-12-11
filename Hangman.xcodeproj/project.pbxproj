@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5946614B23A076D3007CDEA3 /* ScorecardVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5946614A23A076D3007CDEA3 /* ScorecardVC.swift */; };
 		59992F85238F4C7000339953 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59992F84238F4C7000339953 /* AppDelegate.swift */; };
 		59992F87238F4C7000339953 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59992F86238F4C7000339953 /* SceneDelegate.swift */; };
 		59992F8E238F4C7500339953 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 59992F8D238F4C7500339953 /* Assets.xcassets */; };
@@ -15,6 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5946614A23A076D3007CDEA3 /* ScorecardVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorecardVC.swift; sourceTree = "<group>"; };
 		59992F81238F4C7000339953 /* H?ngm?n.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "H?ngm?n.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		59992F84238F4C7000339953 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		59992F86238F4C7000339953 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 			isa = PBXGroup;
 			children = (
 				59992F9D238F4DB200339953 /* MainVC.swift */,
+				5946614A23A076D3007CDEA3 /* ScorecardVC.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -185,6 +188,7 @@
 				59992F85238F4C7000339953 /* AppDelegate.swift in Sources */,
 				59992F9E238F4DB200339953 /* MainVC.swift in Sources */,
 				59992F87238F4C7000339953 /* SceneDelegate.swift in Sources */,
+				5946614B23A076D3007CDEA3 /* ScorecardVC.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

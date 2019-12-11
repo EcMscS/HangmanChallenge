@@ -19,13 +19,14 @@ class MainVC: UIViewController {
         case lose
     }
     
-    var gameStatus: UILabel = UILabel()
     var scoreLabel: UILabel = UILabel()
-    var wordLabel: UILabel = UILabel()
     let newGameButton: UIButton = UIButton(type: .system)
+    let scoreCardView: UIView = UIView()
+    
+    var gameStatus: UILabel = UILabel()
+    var wordLabel: UILabel = UILabel()
     let wordView: UIView = UIView()
     let lettersView: UIView = UIView()
-    let scoreCardView: UIView = UIView()
     let letterColumnStackview: UIStackView = UIStackView()
     var letterRowStackviews = [UIStackView]()
     var alphabetButtons: [UIButton] = [UIButton]()
@@ -38,6 +39,7 @@ class MainVC: UIViewController {
     
     var currentGameWord: String = "Eagle"
     var correctWordCount: Int = 0
+    var incorrectGuessCount: Int = 0
     var currentGuess: [String] = [String]()
     var currentWord: String = ""
     var allLetters: [Character] = []
@@ -110,10 +112,10 @@ class MainVC: UIViewController {
         view.addSubview(lettersView)
         view.addSubview(scoreCardView)
         
-        scorecardTopAnchor = scoreCardView.topAnchor.constraint(equalTo: view.bottomAnchor, constant:0)
+        scorecardTopAnchor = scoreCardView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height)
         scorecardTrailingAnchor = scoreCardView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
-        scorecardBottomAnchor = scoreCardView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         scorecardLeadingAnchor = scoreCardView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
+        scorecardBottomAnchor = scoreCardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         
         NSLayoutConstraint.activate([
             wordLabel.centerXAnchor.constraint(equalTo: wordView.centerXAnchor),
@@ -150,7 +152,6 @@ class MainVC: UIViewController {
     }
     
     func setupLetters() {
-        //let letterColumnStackview = UIStackView()
         letterColumnStackview.translatesAutoresizingMaskIntoConstraints = false
         letterColumnStackview.distribution = .fillEqually
         letterColumnStackview.axis = .vertical
@@ -161,7 +162,6 @@ class MainVC: UIViewController {
             letterColumnStackview.addArrangedSubview(letterRowStackviews[each])
             for _ in 0..<numberOfLettersInEachRow {
                 if !allLetters.isEmpty {
-                    //let button = UIButton(type: .system)
                     let button = alphabetButtons[index]
                     let currentLetter = allLetters.removeFirst()
                     button.setAttributedTitle(createAttributedText(text: String(currentLetter), size: 30, fontWeight: .bold, isShadow: true, wordSpacing: 0), for: .normal)
@@ -169,6 +169,7 @@ class MainVC: UIViewController {
                     button.addTarget(self, action:#selector(buttonPressed(button:)), for: .touchUpInside)
                     
                     index += 1
+                    
                     //TESTING
                     print("Current Letter: \(currentLetter) and letter count: \(allLetters.count)" )
                 }
@@ -278,14 +279,14 @@ class MainVC: UIViewController {
     
     func slideUpScorecard() {
         UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseIn, animations: {
-            self.scorecardTopAnchor.constant = -self.lettersView.frame.height
+            self.scorecardTopAnchor.constant = self.wordView.frame.height * 2 + 10
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
     
     func slideDownScorecard() {
-        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseIn, animations: {
-            self.scorecardTopAnchor.constant = self.lettersView.frame.height
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+            self.scorecardTopAnchor.constant = self.view.frame.height
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
@@ -295,6 +296,7 @@ class MainVC: UIViewController {
         currentGuess.removeAll()
         usedLetters.removeAll()
         correctWordCount = 0
+        incorrectGuessCount = 0
         
         //Reset Buttons
         for eachButton in alphabetButtons {
@@ -330,19 +332,23 @@ class MainVC: UIViewController {
         if currentWord.contains(String(letterPressed!)) {
             print("\(letterPressed!) is in the \(currentWord)")
             revealLetter(letter: letterPressed!)
+            
+            if correctWordCount == currentWord.count {
+               print("You Win!")
+               endGame(state: .win)
+            }
         } else {
             print("Wrong letter selected!")
             print("\(letterPressed!) is not in the \(currentWord)")
-            if allowedNumberOfGuesses == usedLetters.count {
+            incorrectGuessCount += 1
+            
+            if allowedNumberOfGuesses == incorrectGuessCount {
                 print("You Lose! Game Over")
                 endGame(state: .lose)
             }
         }
         
-        if correctWordCount == currentWord.count {
-           print("You Win!")
-           endGame(state: .win)
-        }
+
     
         //Change appearance of pressed button
         button.isEnabled = false
