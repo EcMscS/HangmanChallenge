@@ -19,6 +19,8 @@ class MainVC: UIViewController {
         case lose
     }
     
+    let navBarLabel: UILabel = UILabel()
+    
     var scoreLabel: UILabel = UILabel()
     let newGameButton: UIButton = UIButton(type: .system)
     let scoreCardView: UIView = UIView()
@@ -41,11 +43,11 @@ class MainVC: UIViewController {
     
     var score = 0 {
         didSet {
-            scoreLabel.attributedText = createAttributedText(text: "Score: \(score)", size: 40, fontWeight: .semibold, isShadow: false, wordSpacing: 0)
+            scoreLabel.attributedText = createAttributedText(text: "Score: \(score)", size: 40, fontWeight: .semibold, isShadow: false, wordSpacing: 0, textColor: .label)
         }
     }
     
-    var currentGameWord: String = "Eagle"
+    var currentGameWord: String = ""
     var correctWordCount: Int = 0
     var incorrectGuessCount: Int = 0
     var currentGuess: [String] = [String]()
@@ -79,16 +81,20 @@ class MainVC: UIViewController {
         
         wordLabel.translatesAutoresizingMaskIntoConstraints = false
         wordLabel.textAlignment = .center
-        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10)
+        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 5, textColor: .label)
         
         gameCompleted = false
         emptyButtonsAndLetters()
     }
     
     func setupNavBar() {
-        title = "H?ngm?n"
+        
+        let navTitle = createAttributedText(text: "H?NGM?N", size: 30, fontWeight: .bold, isShadow: false, wordSpacing: 20, textColor: .label)
+        navBarLabel.attributedText = navTitle
+        navigationItem.titleView = navBarLabel
+        
         navigationController?.navigationBar.isTranslucent = true
-        navigationController?.navigationBar.prefersLargeTitles = true
+        //navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     //Only called once
@@ -105,7 +111,7 @@ class MainVC: UIViewController {
         
         view.backgroundColor = .systemBackground
         
-        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10)
+        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10, textColor: .label)
         
         wordView.backgroundColor = .systemRed
         wordView.translatesAutoresizingMaskIntoConstraints = false
@@ -162,7 +168,7 @@ class MainVC: UIViewController {
             lettersView.topAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: 10),
             lettersView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             lettersView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            lettersView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
+            lettersView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
             
             scorecardTopAnchor,
             scorecardTrailingAnchor,
@@ -197,7 +203,7 @@ class MainVC: UIViewController {
                 if !allLetters.isEmpty {
                     let button = alphabetButtons[index]
                     let currentLetter = allLetters.removeFirst()
-                    button.setAttributedTitle(createAttributedText(text: String(currentLetter), size: 30, fontWeight: .bold, isShadow: true, wordSpacing: 0), for: .normal)
+                    button.setAttributedTitle(createAttributedText(text: String(currentLetter), size: 30, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
                     letterRowStackviews[each].addArrangedSubview(button)
                     button.addTarget(self, action:#selector(buttonPressed(button:)), for: .touchUpInside)
                     
@@ -231,25 +237,25 @@ class MainVC: UIViewController {
         return underscores
     }
     
-    func createAttributedText(text: String, size: CGFloat, fontWeight: UIFont.Weight , isShadow: Bool, wordSpacing: CGFloat) -> NSAttributedString {
+    func createAttributedText(text: String, size: CGFloat, fontWeight: UIFont.Weight , isShadow: Bool, wordSpacing: CGFloat, textColor: UIColor) -> NSAttributedString {
         let buttonFont = UIFont.systemFont(ofSize: size, weight: fontWeight)
         var fontAttributes: [NSAttributedString.Key: Any]
         
         if isShadow {
             let shadow = NSShadow()
             shadow.shadowColor = UIColor.black
-            shadow.shadowBlurRadius = 5
+            shadow.shadowBlurRadius = 2
             
             fontAttributes = [
                 .font: buttonFont,
-                .foregroundColor: UIColor.white,
+                .foregroundColor: textColor,
                 .shadow: shadow,
                 .kern: wordSpacing
             ]
         } else {
             fontAttributes = [
                 .font: buttonFont,
-                .foregroundColor: UIColor.white,
+                .foregroundColor: textColor,
                 .kern: wordSpacing
             ]
         }
@@ -268,7 +274,7 @@ class MainVC: UIViewController {
         while revealPositions.count != 0 {
             for reveal in revealPositions {
                 currentGuess[reveal] = letter
-                wordLabel.attributedText = createAttributedText(text: currentGuess.joined(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10)
+                wordLabel.attributedText = createAttributedText(text: currentGuess.joined(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10, textColor: .label)
             }
             if !revealPositions.isEmpty {
                 revealPositions.remove(at: 0)
@@ -286,7 +292,7 @@ class MainVC: UIViewController {
         gameStatus.translatesAutoresizingMaskIntoConstraints = false
         
         newGameButton.translatesAutoresizingMaskIntoConstraints = false
-        newGameButton.setAttributedTitle(createAttributedText(text: "Next Word", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0), for: .normal)
+        newGameButton.setAttributedTitle(createAttributedText(text: "Next Word", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
         newGameButton.backgroundColor = .systemFill
         newGameButton.layer.cornerRadius = 10
         newGameButton.layer.borderColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.2)
@@ -357,8 +363,11 @@ class MainVC: UIViewController {
         }
         
         //Reset Battery fill
-        batteryFillViewTrailingAnchor.constant = -20
-        batteryFillView.backgroundColor = .systemGreen
+        self.batteryFillView.backgroundColor = .systemGreen
+        UIView.animate(withDuration: 3.0, delay: 0.0, options: .curveEaseInOut, animations: {
+            self.batteryFillViewTrailingAnchor.constant = -20
+        }, completion: nil)
+ 
         
         setupLetters()
         setupGame(newWord: currentGameWord)
@@ -367,10 +376,10 @@ class MainVC: UIViewController {
     func endGame(state: GameEndState) {
         if state == .win {
             score += 1
-            gameStatus.attributedText = createAttributedText(text: "You Win!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0)
+            gameStatus.attributedText = createAttributedText(text: "You Win!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label)
         } else if state == .lose {
             score -= 1
-            gameStatus.attributedText = createAttributedText(text: "You Lose!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0)
+            gameStatus.attributedText = createAttributedText(text: "You Lose!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label)
         }
         
         setupScorecardView()
