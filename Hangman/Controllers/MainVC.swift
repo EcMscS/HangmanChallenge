@@ -10,7 +10,7 @@ import UIKit
 
 class MainVC: UIViewController {
 
-    let allowedNumberOfGuesses = 5
+    let allowedNumberOfGuesses = 7
     let numberOfRows = 6
     let numberOfLettersInEachRow = 5
     
@@ -23,6 +23,25 @@ class MainVC: UIViewController {
     let newGameButton: UIButton = UIButton(type: .system)
     let scoreCardView: UIView = UIView()
     
+    let batteryView: UIView = UIView()
+    let batteryImageview: UIImageView = {
+        let imageview = UIImageView(image: UIImage.init(named: "Battery.pdf"))
+        return imageview
+    }()
+    let greenbarImageview: UIImageView = {
+        let imageview = UIImageView(image: UIImage.init(named: "GreenBar.pdf"))
+        return imageview
+    }()
+    let yellowbarImageview: UIImageView = {
+        let imageview = UIImageView(image: UIImage.init(named: "YellowBar.pdf"))
+        return imageview
+    }()
+    let redbarImageview: UIImageView = {
+        let imageview = UIImageView(image: UIImage.init(named: "RedBar.pdf"))
+        return imageview
+    }()
+    var barStackview: UIStackView = UIStackView()
+    
     var gameStatus: UILabel = UILabel()
     var wordLabel: UILabel = UILabel()
     let wordView: UIView = UIView()
@@ -31,9 +50,10 @@ class MainVC: UIViewController {
     var letterRowStackviews = [UIStackView]()
     var alphabetButtons: [UIButton] = [UIButton]()
     
+    
     var score = 0 {
         didSet {
-            scoreLabel.attributedText = createAttributedText(text: "Score: \(score)", size: 50, fontWeight: .bold, isShadow: false, wordSpacing: 0)
+            scoreLabel.attributedText = createAttributedText(text: "Score: \(score)", size: 40, fontWeight: .semibold, isShadow: false, wordSpacing: 0)
         }
     }
     
@@ -53,7 +73,6 @@ class MainVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         
         setupNavBar()
         setupViews()
@@ -102,6 +121,21 @@ class MainVC: UIViewController {
         wordView.translatesAutoresizingMaskIntoConstraints = false
         wordView.addSubview(wordLabel)
         
+        barStackview.translatesAutoresizingMaskIntoConstraints = false
+        barStackview.axis = .horizontal
+        barStackview.alignment = .center
+        barStackview.distribution = .equalSpacing
+        
+        for _ in 0..<7 {
+            let green = UIImageView.init(image: UIImage.init(named: "GreenBar.pdf"))
+            barStackview.addArrangedSubview(green)
+        }
+        
+        //batteryView.backgroundColor = .systemGreen
+        batteryView.translatesAutoresizingMaskIntoConstraints = false
+        batteryView.addSubview(batteryImageview)
+        batteryView.addSubview(barStackview)
+        
         lettersView.backgroundColor = .systemBlue
         lettersView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -109,6 +143,7 @@ class MainVC: UIViewController {
         scoreCardView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(wordView)
+        view.addSubview(batteryView)
         view.addSubview(lettersView)
         view.addSubview(scoreCardView)
         
@@ -125,8 +160,20 @@ class MainVC: UIViewController {
             wordView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
             wordView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
             wordView.heightAnchor.constraint(equalToConstant: 150),
+            
+            batteryView.topAnchor.constraint(equalTo: wordView.bottomAnchor, constant: 10),
+            batteryView.widthAnchor.constraint(equalToConstant: batteryImageview.frame.width),
+            batteryView.heightAnchor.constraint(equalToConstant: batteryImageview.frame.height),
+            batteryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            barStackview.topAnchor.constraint(equalTo: batteryView.topAnchor, constant: 5),
+//            barStackview.widthAnchor.constraint(equalToConstant: batteryImageview.frame.width),
+//            barStackview.heightAnchor.constraint(equalToConstant: batteryImageview.frame.height),
+            barStackview.bottomAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: -5),
+            barStackview.leadingAnchor.constraint(equalTo: batteryView.leadingAnchor, constant: 15),
+            barStackview.trailingAnchor.constraint(equalTo: batteryImageview.trailingAnchor, constant: -30),
     
-            lettersView.topAnchor.constraint(equalTo: wordView.bottomAnchor, constant: 10),
+            lettersView.topAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: 10),
             lettersView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             lettersView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             lettersView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0),
@@ -249,8 +296,11 @@ class MainVC: UIViewController {
         scoreLabel.textAlignment = .center
         scoreLabel.translatesAutoresizingMaskIntoConstraints = false
         
+        gameStatus.textAlignment = .center
+        gameStatus.translatesAutoresizingMaskIntoConstraints = false
+        
         newGameButton.translatesAutoresizingMaskIntoConstraints = false
-        newGameButton.setAttributedTitle(createAttributedText(text: "New Game", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0), for: .normal)
+        newGameButton.setAttributedTitle(createAttributedText(text: "Next Word", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0), for: .normal)
         newGameButton.backgroundColor = .systemFill
         newGameButton.layer.cornerRadius = 10
         newGameButton.layer.borderColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.2)
@@ -263,6 +313,7 @@ class MainVC: UIViewController {
         scoreStackview.axis = .vertical
         scoreStackview.alignment = .center
         scoreStackview.distribution = .fill
+        scoreStackview.addArrangedSubview(gameStatus)
         scoreStackview.addArrangedSubview(scoreLabel)
         scoreStackview.addArrangedSubview(UIView())
         scoreStackview.addArrangedSubview(newGameButton)
@@ -311,8 +362,10 @@ class MainVC: UIViewController {
     func endGame(state: GameEndState) {
         if state == .win {
             score += 1
+            gameStatus.attributedText = createAttributedText(text: "You Win!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0)
         } else if state == .lose {
             score -= 1
+            gameStatus.attributedText = createAttributedText(text: "You Lose!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0)
         }
         
         setupScorecardView()
@@ -348,8 +401,6 @@ class MainVC: UIViewController {
             }
         }
         
-
-    
         //Change appearance of pressed button
         button.isEnabled = false
         button.alpha = 0.3
