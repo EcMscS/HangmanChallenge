@@ -28,19 +28,7 @@ class MainVC: UIViewController {
         let imageview = UIImageView(image: UIImage.init(named: "Battery.pdf"))
         return imageview
     }()
-    let greenbarImageview: UIImageView = {
-        let imageview = UIImageView(image: UIImage.init(named: "GreenBar.pdf"))
-        return imageview
-    }()
-    let yellowbarImageview: UIImageView = {
-        let imageview = UIImageView(image: UIImage.init(named: "YellowBar.pdf"))
-        return imageview
-    }()
-    let redbarImageview: UIImageView = {
-        let imageview = UIImageView(image: UIImage.init(named: "RedBar.pdf"))
-        return imageview
-    }()
-    var barStackview: UIStackView = UIStackView()
+    let batteryFillView: UIView = UIView()
     
     var gameStatus: UILabel = UILabel()
     var wordLabel: UILabel = UILabel()
@@ -65,6 +53,8 @@ class MainVC: UIViewController {
     var allLetters: [Character] = []
     var usedLetters: [Character] = []
     var gameCompleted: Bool = false
+    
+    var batteryFillViewTrailingAnchor: NSLayoutConstraint!
     
     var scorecardTopAnchor: NSLayoutConstraint!
     var scorecardTrailingAnchor: NSLayoutConstraint!
@@ -119,25 +109,21 @@ class MainVC: UIViewController {
         
         wordView.backgroundColor = .systemRed
         wordView.translatesAutoresizingMaskIntoConstraints = false
+        wordView.layer.cornerRadius = 10
         wordView.addSubview(wordLabel)
+
         
-        barStackview.translatesAutoresizingMaskIntoConstraints = false
-        barStackview.axis = .horizontal
-        barStackview.alignment = .center
-        barStackview.distribution = .equalSpacing
+        batteryFillView.translatesAutoresizingMaskIntoConstraints = false
+        batteryFillView.backgroundColor = .systemGreen
         
-        for _ in 0..<7 {
-            let green = UIImageView.init(image: UIImage.init(named: "GreenBar.pdf"))
-            barStackview.addArrangedSubview(green)
-        }
-        
-        //batteryView.backgroundColor = .systemGreen
         batteryView.translatesAutoresizingMaskIntoConstraints = false
         batteryView.addSubview(batteryImageview)
-        batteryView.addSubview(barStackview)
+        batteryView.addSubview(batteryFillView)
+        batteryView.sendSubviewToBack(batteryFillView)
         
         lettersView.backgroundColor = .systemBlue
         lettersView.translatesAutoresizingMaskIntoConstraints = false
+        lettersView.layer.cornerRadius = 10
         
         scoreCardView.backgroundColor = .systemYellow
         scoreCardView.translatesAutoresizingMaskIntoConstraints = false
@@ -146,6 +132,8 @@ class MainVC: UIViewController {
         view.addSubview(batteryView)
         view.addSubview(lettersView)
         view.addSubview(scoreCardView)
+        
+        batteryFillViewTrailingAnchor = batteryFillView.trailingAnchor.constraint(equalTo: batteryView.trailingAnchor, constant: -20)
         
         scorecardTopAnchor = scoreCardView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height)
         scorecardTrailingAnchor = scoreCardView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
@@ -165,14 +153,12 @@ class MainVC: UIViewController {
             batteryView.widthAnchor.constraint(equalToConstant: batteryImageview.frame.width),
             batteryView.heightAnchor.constraint(equalToConstant: batteryImageview.frame.height),
             batteryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            barStackview.topAnchor.constraint(equalTo: batteryView.topAnchor, constant: 5),
-//            barStackview.widthAnchor.constraint(equalToConstant: batteryImageview.frame.width),
-//            barStackview.heightAnchor.constraint(equalToConstant: batteryImageview.frame.height),
-            barStackview.bottomAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: -5),
-            barStackview.leadingAnchor.constraint(equalTo: batteryView.leadingAnchor, constant: 15),
-            barStackview.trailingAnchor.constraint(equalTo: batteryImageview.trailingAnchor, constant: -30),
     
+            batteryFillView.topAnchor.constraint(equalTo: batteryView.topAnchor, constant: 5),
+            batteryFillView.bottomAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: -5),
+            batteryFillView.leadingAnchor.constraint(equalTo: batteryView.leadingAnchor, constant: 5),
+            batteryFillViewTrailingAnchor,
+            
             lettersView.topAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: 10),
             lettersView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             lettersView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -342,6 +328,21 @@ class MainVC: UIViewController {
         }, completion: nil)
     }
     
+    func reduceBattery(multiple: Int) {
+        UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseIn, animations: {
+            if multiple <= 3 {
+                self.batteryFillView.backgroundColor = .systemGreen
+            } else if multiple > 3 && multiple <= 5 {
+                self.batteryFillView.backgroundColor = .systemYellow
+            } else if multiple > 5 {
+                self.batteryFillView.backgroundColor = .systemRed
+            }
+            
+            self.batteryFillViewTrailingAnchor.constant = -(CGFloat(multiple) * (self.batteryView.frame.width / 7))
+            self.view.layoutIfNeeded()
+        }, completion: nil)
+    }
+    
     func resetButtons() {
         allLetters.removeAll()
         currentGuess.removeAll()
@@ -354,6 +355,10 @@ class MainVC: UIViewController {
             eachButton.isEnabled = true
             eachButton.alpha = 1.0
         }
+        
+        //Reset Battery fill
+        batteryFillViewTrailingAnchor.constant = -20
+        batteryFillView.backgroundColor = .systemGreen
         
         setupLetters()
         setupGame(newWord: currentGameWord)
@@ -394,6 +399,7 @@ class MainVC: UIViewController {
             print("Wrong letter selected!")
             print("\(letterPressed!) is not in the \(currentWord)")
             incorrectGuessCount += 1
+            reduceBattery(multiple: incorrectGuessCount)
             
             if allowedNumberOfGuesses == incorrectGuessCount {
                 print("You Lose! Game Over")

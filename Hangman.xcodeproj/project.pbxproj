@@ -44,6 +44,13 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		5942935723A440B800215016 /* Files */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Files;
+			sourceTree = "<group>";
+		};
 		59992F78238F4C7000339953 = {
 			isa = PBXGroup;
 			children = (
@@ -63,6 +70,7 @@
 		59992F83238F4C7000339953 /* Hangman */ = {
 			isa = PBXGroup;
 			children = (
+				5942935723A440B800215016 /* Files */,
 				59263396239217120036FCC7 /* Extensions */,
 				59992F9C238F4C9400339953 /* Storyboards */,
 				59992F9B238F4C8F00339953 /* Delelgates */,
