@@ -40,13 +40,15 @@ class MainVC: UIViewController {
     var letterRowStackviews = [UIStackView]()
     var alphabetButtons: [UIButton] = [UIButton]()
     
-    
     var score = 0 {
         didSet {
             scoreLabel.attributedText = createAttributedText(text: "Score: \(score)", size: 40, fontWeight: .semibold, isShadow: false, wordSpacing: 0, textColor: .label)
         }
     }
     
+    var currentPosition: Int = 0
+    var level = 1
+    var wordList: [String] = [String]()
     var currentGameWord: String = ""
     var correctWordCount: Int = 0
     var incorrectGuessCount: Int = 0
@@ -66,6 +68,7 @@ class MainVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loadLevel()
         setupNavBar()
         setupViews()
         setupLetters()
@@ -81,7 +84,7 @@ class MainVC: UIViewController {
         
         wordLabel.translatesAutoresizingMaskIntoConstraints = false
         wordLabel.textAlignment = .center
-        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 5, textColor: .label)
+        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 30, fontWeight: .heavy, isShadow: false, wordSpacing: 4, textColor: .label)
         
         gameCompleted = false
         emptyButtonsAndLetters()
@@ -237,6 +240,45 @@ class MainVC: UIViewController {
         return underscores
     }
     
+    func loadLevel() {
+        
+        DispatchQueue.global(qos: .userInteractive).async {
+            if let levelFileURL = Bundle.main.url(forResource: "level\(self.level)", withExtension: "txt") {
+                
+                if let levelWords = try? String(contentsOf: levelFileURL) {
+                    var lines = levelWords.components(separatedBy: "\n")
+                    lines.shuffle()
+                    
+                    for (_, word) in lines.enumerated() {
+                        self.wordList.append(word)
+                    }
+                }
+            }
+        }
+        
+        DispatchQueue.main.async {
+            self.currentPosition = 0
+            self.currentWord = self.wordList[self.currentPosition]
+            self.setupGame(newWord: self.currentWord)
+        }
+    }
+    
+    func nextWord() {
+        if currentPosition == wordList.count {
+            self.level += 1
+            self.newGameButton.setTitle("Next Level", for: .normal)
+            self.gameStatus.attributedText = createAttributedText(text: "Level Completed", size: 50, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label)
+        } else {
+            print("Next Word")
+            currentPosition += 1
+            currentWord = wordList[currentPosition]
+        }
+    }
+    
+    func nextLevel() {
+        
+    }
+    
     func createAttributedText(text: String, size: CGFloat, fontWeight: UIFont.Weight , isShadow: Bool, wordSpacing: CGFloat, textColor: UIColor) -> NSAttributedString {
         let buttonFont = UIFont.systemFont(ofSize: size, weight: fontWeight)
         var fontAttributes: [NSAttributedString.Key: Any]
@@ -274,7 +316,7 @@ class MainVC: UIViewController {
         while revealPositions.count != 0 {
             for reveal in revealPositions {
                 currentGuess[reveal] = letter
-                wordLabel.attributedText = createAttributedText(text: currentGuess.joined(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10, textColor: .label)
+                wordLabel.attributedText = createAttributedText(text: currentGuess.joined(), size: 30, fontWeight: .heavy, isShadow: false, wordSpacing: 10, textColor: .label)
             }
             if !revealPositions.isEmpty {
                 revealPositions.remove(at: 0)
@@ -364,13 +406,11 @@ class MainVC: UIViewController {
         
         //Reset Battery fill
         self.batteryFillView.backgroundColor = .systemGreen
-        UIView.animate(withDuration: 3.0, delay: 0.0, options: .curveEaseInOut, animations: {
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
             self.batteryFillViewTrailingAnchor.constant = -20
         }, completion: nil)
  
-        
         setupLetters()
-        setupGame(newWord: currentGameWord)
     }
     
     func endGame(state: GameEndState) {
@@ -387,8 +427,14 @@ class MainVC: UIViewController {
     }
     
     @objc func newGameButtonPressed(button: UIButton) {
+        if button.titleLabel?.text == "Next Level" {
+            print("Implement Next Level")
+        }
+        
+        nextWord()
         slideDownScorecard()
         resetButtons()
+        setupGame(newWord: currentWord)
     }
     
     @objc func buttonPressed(button: UIButton) {
@@ -419,6 +465,5 @@ class MainVC: UIViewController {
         //Change appearance of pressed button
         button.isEnabled = false
         button.alpha = 0.3
-
     }
 }
