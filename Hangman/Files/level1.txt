@@ -1,12 +1,7 @@
 protein
-yellow
+membrane
+cytoplasmic
 mitochondria
-apple
-controller
-guidelines
-feast
-reticent
-stooges
-responsible
-mitigate
-injection
+photosynthesis
+cellular
+triphosphate

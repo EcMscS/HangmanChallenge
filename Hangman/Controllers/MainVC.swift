@@ -32,6 +32,7 @@ class MainVC: UIViewController {
     }()
     let batteryFillView: UIView = UIView()
     
+    var levelCompletedLabel: UILabel = UILabel()
     var gameStatus: UILabel = UILabel()
     var wordLabel: UILabel = UILabel()
     let wordView: UIView = UIView()
@@ -57,6 +58,7 @@ class MainVC: UIViewController {
     var allLetters: [Character] = []
     var usedLetters: [Character] = []
     var gameCompleted: Bool = false
+    var levelCompleted: Bool = false
     
     var batteryFillViewTrailingAnchor: NSLayoutConstraint!
     
@@ -73,10 +75,13 @@ class MainVC: UIViewController {
         setupViews()
         setupLetters()
     }
+
     
     func setupGame(newWord: String) {
         currentWord = newWord.uppercased()
         print("Current word is: \(currentWord)")
+        
+        currentGuess.removeAll()
         
         for (_,_) in currentWord.enumerated() {
             currentGuess.append("_")
@@ -242,6 +247,8 @@ class MainVC: UIViewController {
     
     func loadLevel() {
         
+        wordList.removeAll()
+        
         DispatchQueue.global(qos: .userInteractive).async {
             if let levelFileURL = Bundle.main.url(forResource: "level\(self.level)", withExtension: "txt") {
                 
@@ -250,7 +257,10 @@ class MainVC: UIViewController {
                     lines.shuffle()
                     
                     for (_, word) in lines.enumerated() {
-                        self.wordList.append(word)
+                        if word != "" {
+                            print("Added \(word) to wordlist ")
+                            self.wordList.append(word)
+                        }
                     }
                 }
             }
@@ -260,16 +270,25 @@ class MainVC: UIViewController {
             self.currentPosition = 0
             self.currentWord = self.wordList[self.currentPosition]
             self.setupGame(newWord: self.currentWord)
+           
+            if self.currentPosition == self.wordList.count - 1 {
+                self.levelCompleted = true
+            } else {
+                self.levelCompleted = false
+            }
+
         }
     }
     
     func nextWord() {
-        if currentPosition == wordList.count {
+        let count = wordList.count - 1
+        if currentPosition == count {
+            levelCompleted = true
             self.level += 1
-            self.newGameButton.setTitle("Next Level", for: .normal)
-            self.gameStatus.attributedText = createAttributedText(text: "Level Completed", size: 50, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label)
+            setupScorecardView()
+            loadLevel()
         } else {
-            print("Next Word")
+            print("Current position is \(currentPosition): Next Word")
             currentPosition += 1
             currentWord = wordList[currentPosition]
         }
@@ -333,8 +352,16 @@ class MainVC: UIViewController {
         gameStatus.textAlignment = .center
         gameStatus.translatesAutoresizingMaskIntoConstraints = false
         
+        levelCompletedLabel.textAlignment = .center
+        levelCompletedLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        if levelCompleted == true {
+            newGameButton.setAttributedTitle(createAttributedText(text: "Next Level", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
+        } else {
+            newGameButton.setAttributedTitle(createAttributedText(text: "Next Word", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
+        }
+
         newGameButton.translatesAutoresizingMaskIntoConstraints = false
-        newGameButton.setAttributedTitle(createAttributedText(text: "Next Word", size: 30, fontWeight: .medium, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
         newGameButton.backgroundColor = .systemFill
         newGameButton.layer.cornerRadius = 10
         newGameButton.layer.borderColor = CGColor(srgbRed: 0, green: 0, blue: 0, alpha: 0.2)
@@ -342,12 +369,22 @@ class MainVC: UIViewController {
         newGameButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 20, bottom: 10, right: 20)
         newGameButton.addTarget(self, action: #selector(newGameButtonPressed(button:)), for: .touchUpInside)
         
+        
         let scoreStackview = UIStackView()
         scoreStackview.translatesAutoresizingMaskIntoConstraints = false
         scoreStackview.axis = .vertical
         scoreStackview.alignment = .center
         scoreStackview.distribution = .fill
         scoreStackview.addArrangedSubview(gameStatus)
+        
+        if levelCompleted == true {
+            levelCompletedLabel.attributedText = createAttributedText(text: "Level Completed", size: 30, fontWeight: .semibold, isShadow: false, wordSpacing: 0, textColor: .label)
+            scoreStackview.addArrangedSubview(levelCompletedLabel)
+        } else {
+            levelCompletedLabel.attributedText = createAttributedText(text: "", size: 30, fontWeight: .semibold, isShadow: false, wordSpacing: 0, textColor: .label)
+            scoreStackview.removeArrangedSubview(levelCompletedLabel)
+        }
+        
         scoreStackview.addArrangedSubview(scoreLabel)
         scoreStackview.addArrangedSubview(UIView())
         scoreStackview.addArrangedSubview(newGameButton)
@@ -364,7 +401,7 @@ class MainVC: UIViewController {
     
     func slideUpScorecard() {
         UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseIn, animations: {
-            self.scorecardTopAnchor.constant = self.wordView.frame.height * 2 + 10
+            self.scorecardTopAnchor.constant = self.wordView.frame.height * 2 + self.batteryView.frame.height - 35
             self.view.layoutIfNeeded()
         }, completion: nil)
     }
@@ -405,20 +442,30 @@ class MainVC: UIViewController {
         }
         
         //Reset Battery fill
-        self.batteryFillView.backgroundColor = .systemGreen
-        UIView.animate(withDuration: 1.0, delay: 0.0, options: .curveEaseOut, animations: {
+        UIView.animate(withDuration: 3.0, delay: 0.0, options: .curveEaseIn, animations: {
             self.batteryFillViewTrailingAnchor.constant = -20
-        }, completion: nil)
+            self.batteryFillView.backgroundColor = .systemGreen
+            self.view.layoutIfNeeded()
+        }, completion: nil )
  
         setupLetters()
     }
     
     func endGame(state: GameEndState) {
         if state == .win {
-            score += 1
+            if incorrectGuessCount == 0 {
+                score += 5
+            } else if incorrectGuessCount >= 1 && incorrectGuessCount <= 3 {
+                score += 3
+            } else if incorrectGuessCount >= 4 && incorrectGuessCount < 6 {
+                score += 2
+            } else if incorrectGuessCount >= 6 {
+                score += 1
+            }
+            
             gameStatus.attributedText = createAttributedText(text: "You Win!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label)
         } else if state == .lose {
-            score -= 1
+            score -= 5
             gameStatus.attributedText = createAttributedText(text: "You Lose!", size: 60, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label)
         }
         
@@ -426,15 +473,22 @@ class MainVC: UIViewController {
         slideUpScorecard()
     }
     
+    
     @objc func newGameButtonPressed(button: UIButton) {
-        if button.titleLabel?.text == "Next Level" {
+        //This does not work?
+        if levelCompleted == true {
             print("Implement Next Level")
+            resetButtons()
+            nextWord()
+            setupGame(newWord: currentWord)
+            levelCompleted = false
+            slideDownScorecard()
+        } else {
+            nextWord()
+            slideDownScorecard()
+            resetButtons()
+            setupGame(newWord: currentWord)
         }
-        
-        nextWord()
-        slideDownScorecard()
-        resetButtons()
-        setupGame(newWord: currentWord)
     }
     
     @objc func buttonPressed(button: UIButton) {
