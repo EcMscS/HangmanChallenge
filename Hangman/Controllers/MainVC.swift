@@ -457,7 +457,8 @@ class MainVC: UIViewController {
                 score += 5
             } else if incorrectGuessCount >= 1 && incorrectGuessCount <= 3 {
                 score += 3
-            } else if incorrectGuessCount >= 4 && incorrectGuessCount < 6 {
+            } else if incorrectGuessCount >= 4 &&
+                incorrectGuessCount < 6 {
                 score += 2
             } else if incorrectGuessCount >= 6 {
                 score += 1
