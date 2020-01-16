@@ -8,8 +8,8 @@
 
 import UIKit
 
-class MainVC: UIViewController {
-
+class MainVC: UIViewController, HMLetterContainerViewDelegate {
+    
     let allowedNumberOfGuesses = 7
     let numberOfRows = 6
     let numberOfLettersInEachRow = 5
@@ -23,7 +23,7 @@ class MainVC: UIViewController {
     
     var scoreLabel: UILabel = UILabel()
     let newGameButton: UIButton = UIButton(type: .system)
-    let scoreCardView: UIView = UIView()
+    let scoreCardView = HMScorecardContainerView()
     
     let batteryView: UIView = UIView()
     let batteryImageview: UIImageView = {
@@ -34,12 +34,20 @@ class MainVC: UIViewController {
     
     var levelCompletedLabel: UILabel = UILabel()
     var gameStatus: UILabel = UILabel()
+<<<<<<< Updated upstream
     var wordLabel: UILabel = UILabel()
     let wordView: UIView = UIView()
     let lettersView: UIView = UIView()
     let letterColumnStackview: UIStackView = UIStackView()
     var letterRowStackviews = [UIStackView]()
     var alphabetButtons: [UIButton] = [UIButton]()
+=======
+
+    let lettersView = HMLettersContainerView()
+//    let letterColumnStackview: UIStackView = UIStackView()
+//    var letterRowStackviews = [UIStackView]()
+//    var alphabetButtons: [UIButton] = [UIButton]()
+>>>>>>> Stashed changes
     
     var score = 0 {
         didSet {
@@ -60,8 +68,6 @@ class MainVC: UIViewController {
     var gameCompleted: Bool = false
     var levelCompleted: Bool = false
     
-    var batteryFillViewTrailingAnchor: NSLayoutConstraint!
-    
     var scorecardTopAnchor: NSLayoutConstraint!
     var scorecardTrailingAnchor: NSLayoutConstraint!
     var scorecardBottomAnchor: NSLayoutConstraint!
@@ -72,15 +78,25 @@ class MainVC: UIViewController {
         
         loadLevel()
         setupNavBar()
+<<<<<<< Updated upstream
         setupViews()
         setupLetters()
+=======
+        configureWordContainerView()
+        configureBatteryContainerView()
+        configureLettersContainerView()
+        configureScorecardContainerView()
+        setupGame(newWord: currentGameWord)
+        //setupViews()
+        //setupLetters()
+        
+        lettersView.delegate = self
+>>>>>>> Stashed changes
     }
 
     
     func setupGame(newWord: String) {
         currentWord = newWord.uppercased()
-        print("Current word is: \(currentWord)")
-        
         currentGuess.removeAll()
         
         for (_,_) in currentWord.enumerated() {
@@ -91,20 +107,56 @@ class MainVC: UIViewController {
         wordLabel.textAlignment = .center
         wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 30, fontWeight: .heavy, isShadow: false, wordSpacing: 4, textColor: .label)
         
+        //wordLabel = HMMainWordLabel.init(textAlignment: .center, word: numberOfUnderscores())
+        
         gameCompleted = false
-        emptyButtonsAndLetters()
+        //emptyButtonsAndLetters()
     }
     
     func setupNavBar() {
         
+<<<<<<< Updated upstream
         let navTitle = createAttributedText(text: "H?NGM?N", size: 30, fontWeight: .bold, isShadow: false, wordSpacing: 20, textColor: .label)
         navBarLabel.attributedText = navTitle
         navigationItem.titleView = navBarLabel
+=======
+        let batterySize = batteryView.getBatterySize()
+        
+        NSLayoutConstraint.activate([
+            batteryView.topAnchor.constraint(equalTo: wordView.bottomAnchor, constant: 10),
+            batteryView.widthAnchor.constraint(equalToConstant: batterySize.width),
+            batteryView.heightAnchor.constraint(equalToConstant: batterySize.height),
+            batteryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
+    
+    func configureWordContainerView() {
+        wordLabel = HMMainWordLabel.init(textAlignment: .center, word: numberOfUnderscores())
+        
+        wordView.addSubview(wordLabel)
+        view.addSubview(wordView)
+        
+        NSLayoutConstraint.activate([
+            wordLabel.centerYAnchor.constraint(equalTo: wordView.centerYAnchor),
+            wordLabel.centerXAnchor.constraint(equalTo: wordView.centerXAnchor),
+            
+            wordView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            wordView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            wordView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            wordView.heightAnchor.constraint(equalToConstant: 150)
+        ])
+    }
+    
+    func configureLettersContainerView() {
+        view.addSubview(lettersView)
+        lettersView.setupLetters()
+>>>>>>> Stashed changes
         
         navigationController?.navigationBar.isTranslucent = true
         //navigationController?.navigationBar.prefersLargeTitles = true
     }
     
+<<<<<<< Updated upstream
     //Only called once
     func setupViews() {
         setupGame(newWord: currentGameWord)
@@ -149,6 +201,11 @@ class MainVC: UIViewController {
         
         batteryFillViewTrailingAnchor = batteryFillView.trailingAnchor.constraint(equalTo: batteryView.trailingAnchor, constant: -20)
         
+=======
+    func configureScorecardContainerView() {
+        view.addSubview(scoreCardView)
+        
+>>>>>>> Stashed changes
         scorecardTopAnchor = scoreCardView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height)
         scorecardTrailingAnchor = scoreCardView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         scorecardLeadingAnchor = scoreCardView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
@@ -183,55 +240,67 @@ class MainVC: UIViewController {
             scorecardBottomAnchor,
             scorecardLeadingAnchor
         ])
+        
     }
     
-    func emptyButtonsAndLetters() {
-        let alphabet = "abcdefghijklmnopqrstuvwxyz".uppercased() //26 Letters
-        
-        allLetters = [Character]()
-        
-        for (position, letter) in alphabet.enumerated() {
-            allLetters.append(letter)
-            let newButton = UIButton(type: .system)
-            newButton.tag = position
-            alphabetButtons.append(newButton)
-        }
-    }
+    //Only called once
+//    func setupViews() {
+//        for _ in 0..<numberOfRows {
+//            let singleStackview = UIStackView()
+//            singleStackview.translatesAutoresizingMaskIntoConstraints = false
+//            singleStackview.distribution = .fillEqually
+//            singleStackview.axis = .horizontal
+//            letterRowStackviews.append(singleStackview)
+//        }
+//    }
     
-    func setupLetters() {
-        letterColumnStackview.translatesAutoresizingMaskIntoConstraints = false
-        letterColumnStackview.distribution = .fillEqually
-        letterColumnStackview.axis = .vertical
-        
-        var index = 0
-        
-        for each in 0..<letterRowStackviews.count {
-            letterColumnStackview.addArrangedSubview(letterRowStackviews[each])
-            for _ in 0..<numberOfLettersInEachRow {
-                if !allLetters.isEmpty {
-                    let button = alphabetButtons[index]
-                    let currentLetter = allLetters.removeFirst()
-                    button.setAttributedTitle(createAttributedText(text: String(currentLetter), size: 30, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
-                    letterRowStackviews[each].addArrangedSubview(button)
-                    button.addTarget(self, action:#selector(buttonPressed(button:)), for: .touchUpInside)
-                    
-                    index += 1
-                    
-                    //TESTING
-                    print("Current Letter: \(currentLetter) and letter count: \(allLetters.count)" )
-                }
-            }
-        }
-        
-        lettersView.addSubview(letterColumnStackview)
-        
-        NSLayoutConstraint.activate([
-            letterColumnStackview.topAnchor.constraint(equalTo: lettersView.topAnchor, constant: 10),
-            letterColumnStackview.trailingAnchor.constraint(equalTo: lettersView.trailingAnchor, constant: -10),
-            letterColumnStackview.bottomAnchor.constraint(equalTo: lettersView.bottomAnchor, constant: -10),
-            letterColumnStackview.leadingAnchor.constraint(equalTo: lettersView.leadingAnchor, constant: 10)
-        ])
-    }
+//    func emptyButtonsAndLetters() {
+//        let alphabet = "abcdefghijklmnopqrstuvwxyz".uppercased() //26 Letters
+//
+//        allLetters = [Character]()
+//
+//        for (position, letter) in alphabet.enumerated() {
+//            allLetters.append(letter)
+//            let newButton = UIButton(type: .system)
+//            newButton.tag = position
+//            alphabetButtons.append(newButton)
+//        }
+//    }
+    
+//    func setupLetters() {
+//        letterColumnStackview.translatesAutoresizingMaskIntoConstraints = false
+//        letterColumnStackview.distribution = .fillEqually
+//        letterColumnStackview.axis = .vertical
+//
+//        var index = 0
+//
+//        for each in 0..<letterRowStackviews.count {
+//            letterColumnStackview.addArrangedSubview(letterRowStackviews[each])
+//            for _ in 0..<numberOfLettersInEachRow {
+//                if !allLetters.isEmpty {
+//                    let button = alphabetButtons[index]
+//                    let currentLetter = allLetters.removeFirst()
+//                    button.setAttributedTitle(createAttributedText(text: String(currentLetter), size: 30, fontWeight: .bold, isShadow: false, wordSpacing: 0, textColor: .label), for: .normal)
+//                    letterRowStackviews[each].addArrangedSubview(button)
+//                    button.addTarget(self, action:#selector(buttonPressed(button:)), for: .touchUpInside)
+//
+//                    index += 1
+//
+//                    //TESTING
+//                    print("Current Letter: \(currentLetter) and letter count: \(allLetters.count)" )
+//                }
+//            }
+//        }
+//
+//        lettersView.addSubview(letterColumnStackview)
+//
+//        NSLayoutConstraint.activate([
+//            letterColumnStackview.topAnchor.constraint(equalTo: lettersView.topAnchor, constant: 10),
+//            letterColumnStackview.trailingAnchor.constraint(equalTo: lettersView.trailingAnchor, constant: -10),
+//            letterColumnStackview.bottomAnchor.constraint(equalTo: lettersView.bottomAnchor, constant: -10),
+//            letterColumnStackview.leadingAnchor.constraint(equalTo: lettersView.leadingAnchor, constant: 10)
+//        ])
+//    }
     
     //Only to be called when game is reset
     func numberOfUnderscores() -> String {
@@ -435,7 +504,11 @@ class MainVC: UIViewController {
         correctWordCount = 0
         incorrectGuessCount = 0
         
+        lettersView.resetAllButtons()
+        lettersView.setupLetters()
+       
         //Reset Buttons
+<<<<<<< Updated upstream
         for eachButton in alphabetButtons {
             eachButton.isEnabled = true
             eachButton.alpha = 1.0
@@ -449,6 +522,16 @@ class MainVC: UIViewController {
         }, completion: nil )
  
         setupLetters()
+=======
+//        for eachButton in alphabetButtons {
+//            eachButton.isEnabled = true
+//            eachButton.alpha = 1.0
+//        }
+ 
+        batteryView.resetBattery()
+        
+        
+>>>>>>> Stashed changes
     }
     
     func endGame(state: GameEndState) {
@@ -490,6 +573,15 @@ class MainVC: UIViewController {
             resetButtons()
             setupGame(newWord: currentWord)
         }
+    }
+    
+    func letterButtonPressed(letterButton: HMAlphabetButton) {
+        print("Pressed Button: \(String(describing: letterButton.titleLabel?.text))")
+    }
+    
+    func addButtonToVC(letterButton: HMAlphabetButton) {
+        print("Adding Target")
+        letterButton.addTarget(self, action: #selector(buttonPressed(button:)), for: .touchUpInside)
     }
     
     @objc func buttonPressed(button: UIButton) {
