@@ -20,24 +20,25 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
     }
     
     let navBarLabel: UILabel = UILabel()
+    var wordLabel: HMMainWordLabel!
+    let wordView = WordContainerView()
+    let batteryView = HMBatteryContainerView()
     
     var scoreLabel: UILabel = UILabel()
     let newGameButton: UIButton = UIButton(type: .system)
     let scoreCardView = HMScorecardContainerView()
     
-    let batteryView: UIView = UIView()
-    let batteryImageview: UIImageView = {
-        let imageview = UIImageView(image: UIImage.init(named: "Battery.pdf"))
-        return imageview
-    }()
-    let batteryFillView: UIView = UIView()
-    
     var levelCompletedLabel: UILabel = UILabel()
     var gameStatus: UILabel = UILabel()
+<<<<<<< HEAD
 <<<<<<< Updated upstream
     var wordLabel: UILabel = UILabel()
     let wordView: UIView = UIView()
     let lettersView: UIView = UIView()
+=======
+
+    let lettersView = HMLettersContainerView()
+>>>>>>> parent of 783ce21... Revert "Partial Refactoring"
     let letterColumnStackview: UIStackView = UIStackView()
     var letterRowStackviews = [UIStackView]()
     var alphabetButtons: [UIButton] = [UIButton]()
@@ -75,10 +76,17 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemBackground
         
         loadLevel()
         setupNavBar()
+<<<<<<< HEAD
 <<<<<<< Updated upstream
+=======
+        configureWordContainerView()
+        configureBatteryContainerView()
+        configureLettersContainerView()
+>>>>>>> parent of 783ce21... Revert "Partial Refactoring"
         setupViews()
         setupLetters()
 =======
@@ -114,6 +122,7 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
     }
     
     func setupNavBar() {
+<<<<<<< HEAD
         
 <<<<<<< Updated upstream
         let navTitle = createAttributedText(text: "H?NGM?N", size: 30, fontWeight: .bold, isShadow: false, wordSpacing: 20, textColor: .label)
@@ -152,8 +161,57 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
         lettersView.setupLetters()
 >>>>>>> Stashed changes
         
+=======
+        navBarLabel.text = "H?NGM?N"
+        navBarLabel.font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        navBarLabel.font = .boldSystemFont(ofSize: 50)
+        navBarLabel.adjustsFontSizeToFitWidth = true
+        navigationItem.titleView = navBarLabel
+
+        navigationController?.navigationBar.tintColor = .systemRed
+>>>>>>> parent of 783ce21... Revert "Partial Refactoring"
         navigationController?.navigationBar.isTranslucent = true
-        //navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
+    func configureBatteryContainerView() {
+        view.addSubview(batteryView)
+        
+        let batterySize = batteryView.getBatterySize()
+        
+        NSLayoutConstraint.activate([
+            batteryView.topAnchor.constraint(equalTo: wordView.bottomAnchor, constant: 10),
+            batteryView.widthAnchor.constraint(equalToConstant: batterySize.width),
+            batteryView.heightAnchor.constraint(equalToConstant: batterySize.height),
+            batteryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+        ])
+    }
+    
+    func configureWordContainerView() {
+        wordLabel = HMMainWordLabel.init(textAlignment: .center, word: numberOfUnderscores())
+        
+        wordView.addSubview(wordLabel)
+        view.addSubview(wordView)
+        
+        NSLayoutConstraint.activate([
+            wordLabel.centerYAnchor.constraint(equalTo: wordView.centerYAnchor),
+            wordLabel.centerXAnchor.constraint(equalTo: wordView.centerXAnchor),
+            
+            wordView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            wordView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
+            wordView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
+            wordView.heightAnchor.constraint(equalToConstant: 150)
+        ])
+    }
+    
+    func configureLettersContainerView() {
+        view.addSubview(lettersView)
+        
+        NSLayoutConstraint.activate([
+            lettersView.topAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: 10),
+            lettersView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            lettersView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            lettersView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+        ])
     }
     
 <<<<<<< Updated upstream
@@ -169,35 +227,11 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
             letterRowStackviews.append(singleStackview)
         }
         
-        view.backgroundColor = .systemBackground
-        
-        wordLabel.attributedText = createAttributedText(text: numberOfUnderscores(), size: 50, fontWeight: .heavy, isShadow: false, wordSpacing: 10, textColor: .label)
-        
-        wordView.backgroundColor = .systemRed
-        wordView.translatesAutoresizingMaskIntoConstraints = false
-        wordView.layer.cornerRadius = 10
-        wordView.addSubview(wordLabel)
-
-        
-        batteryFillView.translatesAutoresizingMaskIntoConstraints = false
-        batteryFillView.backgroundColor = .systemGreen
-        
-        batteryView.translatesAutoresizingMaskIntoConstraints = false
-        batteryView.addSubview(batteryImageview)
-        batteryView.addSubview(batteryFillView)
-        batteryView.sendSubviewToBack(batteryFillView)
-        
-        lettersView.backgroundColor = .systemBlue
-        lettersView.translatesAutoresizingMaskIntoConstraints = false
-        lettersView.layer.cornerRadius = 10
-        
         scoreCardView.backgroundColor = .systemYellow
         scoreCardView.translatesAutoresizingMaskIntoConstraints = false
-        
-        view.addSubview(wordView)
-        view.addSubview(batteryView)
-        view.addSubview(lettersView)
+
         view.addSubview(scoreCardView)
+<<<<<<< HEAD
         
         batteryFillViewTrailingAnchor = batteryFillView.trailingAnchor.constraint(equalTo: batteryView.trailingAnchor, constant: -20)
         
@@ -206,35 +240,15 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
         view.addSubview(scoreCardView)
         
 >>>>>>> Stashed changes
+=======
+
+>>>>>>> parent of 783ce21... Revert "Partial Refactoring"
         scorecardTopAnchor = scoreCardView.topAnchor.constraint(equalTo: view.topAnchor, constant: view.frame.height)
         scorecardTrailingAnchor = scoreCardView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         scorecardLeadingAnchor = scoreCardView.leadingAnchor.constraint(equalTo: view.leadingAnchor)
         scorecardBottomAnchor = scoreCardView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0)
         
         NSLayoutConstraint.activate([
-            wordLabel.centerXAnchor.constraint(equalTo: wordView.centerXAnchor),
-            wordLabel.centerYAnchor.constraint(equalTo: wordView.centerYAnchor),
-            
-            wordView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            wordView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -30),
-            wordView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 30),
-            wordView.heightAnchor.constraint(equalToConstant: 150),
-            
-            batteryView.topAnchor.constraint(equalTo: wordView.bottomAnchor, constant: 10),
-            batteryView.widthAnchor.constraint(equalToConstant: batteryImageview.frame.width),
-            batteryView.heightAnchor.constraint(equalToConstant: batteryImageview.frame.height),
-            batteryView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-    
-            batteryFillView.topAnchor.constraint(equalTo: batteryView.topAnchor, constant: 5),
-            batteryFillView.bottomAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: -5),
-            batteryFillView.leadingAnchor.constraint(equalTo: batteryView.leadingAnchor, constant: 5),
-            batteryFillViewTrailingAnchor,
-            
-            lettersView.topAnchor.constraint(equalTo: batteryView.bottomAnchor, constant: 10),
-            lettersView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            lettersView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            lettersView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            
             scorecardTopAnchor,
             scorecardTrailingAnchor,
             scorecardBottomAnchor,
@@ -482,21 +496,6 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
         }, completion: nil)
     }
     
-    func reduceBattery(multiple: Int) {
-        UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseIn, animations: {
-            if multiple <= 3 {
-                self.batteryFillView.backgroundColor = .systemGreen
-            } else if multiple > 3 && multiple <= 5 {
-                self.batteryFillView.backgroundColor = .systemYellow
-            } else if multiple > 5 {
-                self.batteryFillView.backgroundColor = .systemRed
-            }
-            
-            self.batteryFillViewTrailingAnchor.constant = -(CGFloat(multiple) * (self.batteryView.frame.width / 7))
-            self.view.layoutIfNeeded()
-        }, completion: nil)
-    }
-    
     func resetButtons() {
         allLetters.removeAll()
         currentGuess.removeAll()
@@ -513,14 +512,9 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
             eachButton.isEnabled = true
             eachButton.alpha = 1.0
         }
-        
-        //Reset Battery fill
-        UIView.animate(withDuration: 3.0, delay: 0.0, options: .curveEaseIn, animations: {
-            self.batteryFillViewTrailingAnchor.constant = -20
-            self.batteryFillView.backgroundColor = .systemGreen
-            self.view.layoutIfNeeded()
-        }, completion: nil )
  
+        batteryView.resetBattery()
+        
         setupLetters()
 =======
 //        for eachButton in alphabetButtons {
@@ -601,7 +595,8 @@ class MainVC: UIViewController, HMLetterContainerViewDelegate {
             print("Wrong letter selected!")
             print("\(letterPressed!) is not in the \(currentWord)")
             incorrectGuessCount += 1
-            reduceBattery(multiple: incorrectGuessCount)
+            //reduceBattery(multiple: incorrectGuessCount)
+            batteryView.reduceBattery(multiple: incorrectGuessCount)
             
             if allowedNumberOfGuesses == incorrectGuessCount {
                 print("You Lose! Game Over")

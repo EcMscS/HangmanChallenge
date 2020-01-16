@@ -8,6 +8,7 @@
 
 import UIKit
 
+<<<<<<< HEAD
 protocol HMLetterContainerViewDelegate: AnyObject{
     func letterButtonPressed(letterButton: HMAlphabetButton)
     func addButtonToVC(letterButton: HMAlphabetButton)
@@ -98,6 +99,19 @@ class HMLettersContainerView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+=======
+class HMLettersContainerView: UIView {
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configure()
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+>>>>>>> parent of 783ce21... Revert "Partial Refactoring"
     private func configure() {
         backgroundColor = .systemBlue
         layer.cornerRadius = 10

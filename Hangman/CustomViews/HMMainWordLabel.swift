@@ -38,7 +38,11 @@ class HMMainWordLabel: UILabel {
     
     private func createAttributedText(word: String) -> NSAttributedString {
         
+<<<<<<< HEAD
         let labelFont = UIFont.preferredFont(forTextStyle: .title1)
+=======
+        let labelFont = UIFont.preferredFont(forTextStyle: .headline)
+>>>>>>> parent of 783ce21... Revert "Partial Refactoring"
         var fontAttributes: [NSAttributedString.Key: Any]
         
         fontAttributes = [
